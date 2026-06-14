@@ -1,0 +1,7 @@
+runtime: nodejs20
+
+env_variables:
+  JWT_KEY: "GaraFixLulusUTB1"
+  ENCRYPTION_KEY: "c56a418065aa4266b3d5ac55ffdc9f25a1c8b3e894c0e640f5d4a23c17e01c7f"
+  ENCRYPTION_IV: "aabbccddeeff00112233445566778899"
+  ML_API: "https://ml-870007013858.asia-southeast2.run.app/predict"
