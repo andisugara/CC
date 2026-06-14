@@ -2,11 +2,11 @@ const { Storage } = require('@google-cloud/storage');
 
 const storage = new Storage();
 
-const bucketName = "z-health-bucket23";
+const bucketName = "z-health-496809.firebasestorage.app";
 const bucket = storage.bucket(bucketName);
 
 function imgUrlBucket(filename) {
-    return `https://storage.googleapis.com/${bucketName}/${filename}`;
+    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${filename}`;
 }
 
 const bucketUpload = {};
