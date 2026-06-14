@@ -1,9 +1,6 @@
 const { Storage } = require('@google-cloud/storage');
 
-const storage = new Storage({
-    projectId: 'z-healths',
-    keyFilename: process.env.GCP_CREDENTIALS
-});
+const storage = new Storage();
 
 const bucketName = "z-health-bucket23";
 const bucket = storage.bucket(bucketName);
