@@ -6,7 +6,7 @@ const bucketName = "z-health-496809.firebasestorage.app";
 const bucket = storage.bucket(bucketName);
 
 function imgUrlBucket(filename) {
-    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${filename}`;
+    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
 }
 
 const bucketUpload = {};
