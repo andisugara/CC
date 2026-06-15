@@ -14,7 +14,7 @@ const bucketUpload = {};
 bucketUpload.uploadToBucket = (req, res, next) => {
 
     if (!req.file) return next();
-
+    const user_id = req.params.id;
     const timeStamp = new Date().getTime()
     const imgName = `avatar-${user_id}${path.extname(req.file.originalname)}`;
 
