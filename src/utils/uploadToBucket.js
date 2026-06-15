@@ -1,16 +1,14 @@
 const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
-const storage = new Storage({
-    projectId: 'z-healths',
-    keyFilename: process.env.GCP_CREDENTIALS
-});
 
-const bucketName = "z-health-bucket23";
+const storage = new Storage();
+
+const bucketName = "z-health-496809.firebasestorage.app";
 const bucket = storage.bucket(bucketName);
 
 function imgUrlBucket(filename) {
-    return `https://storage.googleapis.com/${bucketName}/${filename}`;
+    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(filename)}?alt=media`;
 }
 
 const bucketUpload = {};
