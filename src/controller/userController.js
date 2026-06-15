@@ -60,7 +60,7 @@ const loginCtrl = async (req, res) => {
 
     const userSnapshot = await getUsers(email);
 
-    if (userSnapshot.empty) {
+   if (!userSnapshot) { // ✅ ganti dari userSnapshot.empty
         return res.status(400).json({
             error: true,
             message: 'User tidak ada, please register!'
