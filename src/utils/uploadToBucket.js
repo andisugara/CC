@@ -1,4 +1,5 @@
 const { Storage } = require('@google-cloud/storage');
+const path = require('path');
 
 const storage = new Storage({
     projectId: 'z-healths',
@@ -22,9 +23,9 @@ bucketUpload.uploadToBucket = (req, res, next) => {
     const ext = path.extname(req.file.originalname);
     const imgName = `avatar-${req.params.id}${ext}`;
 
-    let path;
+    let folder;
     if (req.file.fieldname == 'profile_img') {
-        path = 'profile_img/'
+        folder = 'profile_img/'
     } 
     // else if (req.file.fieldname == 'image') {
     //     path = 'donation_img/'
@@ -34,7 +35,7 @@ bucketUpload.uploadToBucket = (req, res, next) => {
 
     // }
         
-    const gcsname = path + imgName;
+    const gcsname = folder + imgName;
     const file = bucket.file(gcsname);
 
 
