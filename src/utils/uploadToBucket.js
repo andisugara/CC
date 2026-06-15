@@ -22,11 +22,13 @@ bucketUpload.uploadToBucket = (req, res, next) => {
         
     const gcsname = folder + imgName;
     const file = bucket.file(gcsname);
+
     const stream = file.createWriteStream({
         metadata: {
-            contentType: req.file.mimetype,
+            contentType: req.file.mimetype || 'image/jpeg', // ✅ fallback ke image/jpeg
         },
     });
+    
     stream.on("error", (err) => {
         req.file.cloudStorageError = err;
         next(err);
