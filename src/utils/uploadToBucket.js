@@ -16,7 +16,8 @@ const bucketUpload = {};
 bucketUpload.uploadToBucket = (req, res, next) => {
 
     if (!req.file) return next();
-
+    console.log('mimetype:', req.file.mimetype); // ✅ tambah ini
+    console.log('buffer length:', req.file.buffer?.length); // ✅ tambah ini
     const timeStamp = new Date().getTime()
     const ext = path.extname(req.file.originalname);
     const imgName = `avatar-${req.params.id}${ext}`;
