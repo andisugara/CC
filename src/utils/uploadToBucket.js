@@ -10,49 +10,33 @@ function imgUrlBucket(filename) {
 }
 
 const bucketUpload = {};
-
+const nodePath = require('path'); 
 bucketUpload.uploadToBucket = (req, res, next) => {
-
     if (!req.file) return next();
     const user_id = req.params.id;
-    const timeStamp = new Date().getTime()
-    const imgName = `avatar-${user_id}${path.extname(req.file.originalname)}`;
-
-    let path;
+    const imgName = `avatar-${user_id}${nodePath.extname(req.file.originalname)}`; // ✅ pakai nodePath
+    let folder; // ✅ ganti nama variable dari 'path' ke 'folder'
     if (req.file.fieldname == 'profile_img') {
-        path = 'profile_img/'
-    } 
-    // else if (req.file.fieldname == 'image') {
-    //     path = 'donation_img/'
-
-    // } else if (req.file.fieldname == 'sell_img') {
-    //     path = 'sell_img/'
-
-    // }
+        folder = 'profile_img/'
+    }
         
-    const gcsname = path + imgName;
+    const gcsname = folder + imgName;
     const file = bucket.file(gcsname);
-
-
     const stream = file.createWriteStream({
         metadata: {
             contentType: req.file.mimetype,
         },
     });
-
     stream.on("error", (err) => {
         req.file.cloudStorageError = err;
         next(err);
     });
-
-
     stream.on("finish", () => {
-        req.file.cloudStorageObject = gcsname;
         req.file.cloudStoragePublicUrl = imgUrlBucket(gcsname);
-        next(); 
+        next();
     });
-    
     stream.end(req.file.buffer);
 };
+
 
 module.exports = bucketUpload;
