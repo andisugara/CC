@@ -53,10 +53,7 @@ bucketUpload.uploadToBucket = (req, res, next) => {
     stream.on("finish", () => {
         req.file.cloudStorageObject = gcsname;
         req.file.cloudStoragePublicUrl = imgUrlBucket(gcsname);
-        file.makePublic().then(() => {
-            req.file.cloudStoragePublicUrl = imgUrlBucket(gcsname);
-            next();
-        });
+        next(); // ✅ langsung next, hapus file.makePublic()
     });
 
     stream.end(req.file.buffer);
