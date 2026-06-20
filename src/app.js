@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const journalRoute = require('./routes/journalRoutes')
 const userRoute = require('./routes/userRoutes')
+const articleRoute = require('./routes/articleRoutes')
 
 const app = express()
 const port = 8080
@@ -28,6 +29,7 @@ app.use(
 // const upload = multer();
 
 app.use('/journal', journalRoute)
+app.use('/articles', articleRoute)
 app.use('/', userRoute);
 
 app.listen(port, () => {
