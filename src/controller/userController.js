@@ -61,9 +61,9 @@ const loginCtrl = async (req, res) => {
     const userSnapshot = await getUsers(email);
 
    if (!userSnapshot) { // ✅ ganti dari userSnapshot.empty
-        return res.status(400).json({
+        return res.status(404).json({
             error: true,
-            message: 'User tidak ada, please register!'
+            message: 'Email atau Password salah!'
         })
     }
 
@@ -72,7 +72,7 @@ const loginCtrl = async (req, res) => {
     if (password !== checkPassword) {
         return res.status(404).json({
             error: true,
-            message: 'Password Salah!'
+            message: 'Email atau Password salah!'
         })
     }
 
