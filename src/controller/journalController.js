@@ -11,6 +11,20 @@ const createJournalCtrl = async (req, res) => {
         return res.status(400).json({ message: 'Input waktu dan aktivitas harus berupa angka!' });
     }
 
+    const totalWaktu = parseFloat(waktu_belajar) + parseFloat(waktu_belajar_tambahan) + parseFloat(waktu_tidur) + parseFloat(aktivitas_sosial) + parseFloat(aktivitas_fisik);
+    if (totalWaktu > 24) {
+        return res.status(400).json({
+            error: true,
+            message: "Jam total lebih dari 24 jam."
+        });
+    }
+    if (totalWaktu < 24) {
+        return res.status(400).json({
+            error: true,
+            message: "Jam total kurang dari 24 jam."
+        });
+    }
+
     const journal_id = crypto.randomUUID()
     const createdAt = new Date().toISOString();
 
@@ -34,6 +48,7 @@ const createJournalCtrl = async (req, res) => {
     } 
 
     try {
+        // Panggil API ML untuk mendapatkan prediksi
         const predict = await axios.post(`${process.env.ML_API}`, {
             waktu_belajar: parseFloat(waktu_belajar),
             waktu_belajar_tambahan: parseFloat(waktu_belajar_tambahan),
