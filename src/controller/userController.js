@@ -98,7 +98,7 @@ const onLoginCtrl = (req, res) => {
 
 const updateProfilCtrl = async (req, res) => {
     const user_id = req.params.id
-    const ava = req.file.cloudStoragePublicUrl
+    const ava = req.file ? req.file.cloudStoragePublicUrl : null
     const { fullname, email, password, birthdate } = req.body;
 
     try {
@@ -111,7 +111,7 @@ const updateProfilCtrl = async (req, res) => {
             email: email || user.email,
             password: password || 
             user.password,
-            profile_img: ava || user.profile_img
+            profile_img: ava || user.profile_img || null
         }
 
         if (password) {
