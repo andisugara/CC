@@ -7,11 +7,11 @@ const multer = require('../middleware/uploadImages');
 
 const router = express.Router();
 
-router.post('/register', multer.none(), registerCtrl);
-router.post('/login', multer.none(), loginCtrl);
+router.post('/register', verifyToken, multer.none(), registerCtrl);
+router.post('/login', verifyToken, multer.none(), loginCtrl);
 
 router.get('/auth', verifyToken, onLoginCtrl);
 router.put('/profile/:id', verifyToken, multer.single('profile_img'), bucketUpload.uploadToBucket, updateProfilCtrl);
-router.get('/profile/:id', getUserbyidCtrl);
+router.get('/profile/:id', verifyToken, getUserbyidCtrl);
 
 module.exports = router;

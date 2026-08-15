@@ -1,18 +1,12 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config()
+const admin = require('firebase-admin');
 
-function generateAccessToken(email) {
-  return jwt.sign({ email }, process.env.JWT_KEY, { expiresIn: "1day" });
+if (admin.apps.length === 0) {
+  admin.initializeApp();
 }
 
-const verifyToken = (req, res, next) => {
-    const JWT_KEY = process.env.JWT_KEY;
-  
+const verifyToken = async (req, res, next) => {
     const header = req.headers;
     const Istoken = header && header.authorization && header.authorization.split(' ')[0] === 'Bearer';
-
-// console.log(header)
-//     console.log(Istoken)
   
     if (!Istoken) {
       return res.status(400).json({
@@ -23,17 +17,17 @@ const verifyToken = (req, res, next) => {
   
     const token = header.authorization.split(' ')[1];
   
-    jwt.verify(token, JWT_KEY, (error, decoded) => {
-      if (error) {
-        return res.status(403).json({
-          error: true,
-          message: error.message,
-        });
-      } else {
-        res.locals.jwt = decoded;
-        next();
-      }
-    });
+    try {
+      const decoded = await admin.auth().verifyIdToken(token);
+      res.locals.uid = decoded.uid;
+      res.locals.email = decoded.email;
+      next();
+    } catch (error) {
+      return res.status(403).json({
+        error: true,
+        message: error.message,
+      });
+    }
   };
 
-module.exports = { generateAccessToken, verifyToken };
+module.exports = { verifyToken };

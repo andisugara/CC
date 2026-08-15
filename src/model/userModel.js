@@ -39,18 +39,15 @@ async function updateProfil(id, newData) {
 }
 
 async function getUserbyid(user_id){
-  const userRef = await db
-      .collection("users")
-      .where("user_id", "==", user_id)
-      .get();
-
-let data = null;
-userRef.forEach((item) => {
-    data = item.data();
-});
-
-
-return data;
+  try {
+    const userDoc = await db.collection("users").doc(user_id).get();
+    if (!userDoc.exists) {
+      return null;
+    }
+    return userDoc.data();
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 module.exports = { inputUser, getUsers, updateProfil, getUserbyid };

@@ -1,44 +1,32 @@
-const crypto = require('crypto');
 require('dotenv').config()
 
-const { generateAccessToken } = require('../middleware/authToken');
-const { inputUser, getUsers, updateProfil, getUserbyid } = require('../model/userModel')
-const { encrypt, decrypt } = require('../utils/crypt')
+const { inputUser, updateProfil, getUserbyid } = require('../model/userModel')
 
 const registerCtrl = async (req, res) => {
-    const { fullname, password, confirmPass, birthdate, email, profile_img } = req.body;
-    // const profile_img = req.file.cloudStoragePublicUrl;
-    const user_id = crypto.randomUUID();
+    const { fullname, birthdate, profile_img } = req.body;
+    const user_id = res.locals.uid;
+    const email = res.locals.email;
     const createdAt = new Date().toISOString();
 
-    if (password !== confirmPass) {
-        return res.status(400).json({
-            error: true,
-            message: 'Password tidak cocok!'
-        });
-    }
-
-    const existingUser = await getUsers(email);
-
-    if (existingUser) {
-      return res.status(400).json({
-        error: true,
-        message: 'Email sudah ada'
-      });
-    }
-
-    const encryptedPassword = encrypt(password);
-    const newUser = {
-        user_id: user_id,
-        fullname: fullname,
-        birthdate: birthdate,
-        email: email,
-        password: 
-        encryptedPassword,
-        createdAt: createdAt,
-        profile_img: profile_img
-    }
     try {
+        const existingUser = await getUserbyid(user_id);
+
+        if (existingUser) {
+            return res.status(400).json({
+                error: true,
+                message: 'User sudah terdaftar!'
+            });
+        }
+
+        const newUser = {
+            user_id: user_id,
+            fullname: fullname,
+            birthdate: birthdate,
+            email: email,
+            createdAt: createdAt,
+            profile_img: profile_img || null
+        }
+
         await inputUser(user_id, newUser);
 
         return res.status(200).json({
@@ -56,67 +44,62 @@ const registerCtrl = async (req, res) => {
 }
 
 const loginCtrl = async (req, res) => {
-    const { email, password } = req.body
+    const user_id = res.locals.uid;
 
-    const userSnapshot = await getUsers(email);
+    try {
+        const userSnapshot = await getUserbyid(user_id);
 
-   if (!userSnapshot) { // ✅ ganti dari userSnapshot.empty
-        return res.status(404).json({
-            error: true,
-            message: 'Email atau Password salah!'
+        if (!userSnapshot) {
+            return res.status(404).json({
+                error: true,
+                message: 'Profil user tidak ditemukan!'
+            })
+        }
+
+        return res.status(200).json({
+            error: false,
+            message: 'Login Berhasil !',
+            user: userSnapshot
         })
-    }
-
-    const checkPassword = decrypt(userSnapshot.password)
-
-    if (password !== checkPassword) {
-        return res.status(404).json({
+    } catch (e) {
+        return res.status(500).json({
             error: true,
-            message: 'Email atau Password salah!'
-        })
+            message: e.message,
+        });
     }
-
-    console.log(userSnapshot.email)
-
-    userSnapshot.token = generateAccessToken(email);
-
-    return res.status(200).json({
-        error: false,
-        message: 'Login Berhasil !',
-        user: userSnapshot
-    })
 }
 
 const onLoginCtrl = (req, res) => {
-    const data = res.locals.jwt;
-
     res.status(200).json({
         error: false,
-        message: data
+        message: {
+            uid: res.locals.uid,
+            email: res.locals.email
+        }
     });
 }
 
 const updateProfilCtrl = async (req, res) => {
     const user_id = req.params.id
     const ava = req.file ? req.file.cloudStoragePublicUrl : null
-    const { fullname, email, password, birthdate } = req.body;
+    const { fullname, email, birthdate } = req.body;
 
     try {
         const user = await getUserbyid(user_id);
+
+        if (!user) {
+            return res.status(404).json({
+                error: true,
+                message: 'User tidak ditemukan'
+            });
+        }
 
         const data = {
             user_id: user_id,
             birthdate: birthdate || user.birthdate,
             fullname: fullname || user.fullname,
             email: email || user.email,
-            password: password || 
-            user.password,
             profile_img: ava || user.profile_img || null
-        }
-
-        if (password) {
-            const encryptedPassword = encrypt(data.password);
-            data.password = encryptedPassword; 
         }
 
         await updateProfil(user_id, data)
@@ -140,15 +123,17 @@ const getUserbyidCtrl = async (req, res) => {
     try {
         const user = await getUserbyid(id);
         
-        const decryptedPass = decrypt(user.password)
+        if (!user) {
+            return res.status(404).json({
+                message: 'User tidak ditemukan!'
+            });
+        }
 
         const data = {
             user_id: user.user_id,
             birthdate: user.birthdate,
             fullname: user.fullname,
             email: user.email,
-            password: 
-            decryptedPass,
             profile_img: user.profile_img
         }
 
