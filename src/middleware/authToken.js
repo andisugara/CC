@@ -27,6 +27,7 @@ const verifyToken = async (req, res, next) => {
       res.locals.email = decoded.email;
       next();
     } catch (error) {
+      console.error('Token verification error:', error);
       return res.status(403).json({
         error: true,
         message: error.message,
