@@ -1,7 +1,11 @@
 const admin = require('firebase-admin');
 
-if (admin.apps.length === 0) {
+try {
   admin.initializeApp();
+} catch (error) {
+  if (error.code !== 'app/duplicate-app') {
+    console.error('Firebase admin initialization error:', error);
+  }
 }
 
 const verifyToken = async (req, res, next) => {
