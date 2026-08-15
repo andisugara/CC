@@ -1,7 +1,8 @@
-const admin = require('firebase-admin');
+const { initializeApp } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
 
 try {
-  admin.initializeApp();
+  initializeApp();
 } catch (error) {
   if (error.code !== 'app/duplicate-app') {
     console.error('Firebase admin initialization error:', error);
@@ -22,7 +23,7 @@ const verifyToken = async (req, res, next) => {
     const token = header.authorization.split(' ')[1];
   
     try {
-      const decoded = await admin.auth().verifyIdToken(token);
+      const decoded = await getAuth().verifyIdToken(token);
       res.locals.uid = decoded.uid;
       res.locals.email = decoded.email;
       next();
